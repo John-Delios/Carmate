@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workshop Order Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --graphite:#1B1D1F;
+    --graphite-soft:#26292C;
+    --paper:#EDEAE3;
+    --paper-dim:#DAD5C9;
+    --safety:#E8590C;
+    --safety-dim:#B8460A;
+    --steel:#3A506B;
+    --steel-light:#5B7699;
+    --good:#2F9E44;
+    --line:#3A3D40;
+    --line-light:#C9C3B5;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--graphite);
+    color:var(--paper);
+    font-family:'IBM Plex Sans',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    letter-spacing:0.01em;
+  }
+  .shell{
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 24px 80px;
+  }
+  header.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:2px solid var(--line);
+    padding-bottom:18px;
+    margin-bottom:28px;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  header.top .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  header.top h1{
+    font-size:30px;
+    margin:0;
+    color:var(--white);
+  }
+  header.top .brand-mark{
+    width:10px;height:10px;
+    background:var(--safety);
+    display:inline-block;
+    transform:rotate(45deg);
+  }
+  header.top .bay{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--line-light);
+  }
+  .layout{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:22px;
+  }
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr;}
+  }
+  .panel{
+    background:var(--graphite-soft);
+    border:1px solid var(--line);
+  }
+  .panel-head{
+    padding:16px 18px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-head h2{
+    margin:0;
+    font-size:20px;
+    color:var(--white);
+  }
+  .panel-body{padding:18px;}
+
+  /* Rego entry - shaped like a plate */
+  .rego-form{display:flex;flex-direction:column;gap:14px;}
+  .plate-input-wrap{
+    display:flex;
+    border:3px solid var(--white);
+    border-radius:6px;
+    overflow:hidden;
+    background:var(--white);
+  }
+  .plate-state{
+    background:var(--safety);
+    color:var(--white);
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 8px;
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+    letter-spacing:0.05em;
+  }
+  #regoInput{
+    flex:1;
+    border:none;
+    outline:none;
+    background:var(--white);
+    color:var(--graphite);
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:26px;
+    letter-spacing:0.12em;
+    text-align:center;
+    padding:14px 8px;
+    text-transform:uppercase;
+  }
+  #regoInput::placeholder{color:#B7B2A4;letter-spacing:0.08em;}
+  .lookup-btn{
+    background:var(--safety);
+    color:var(--white);
+    border:none;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:17px;
+    letter-spacing:0.03em;
+    padding:13px;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .lookup-btn:hover{background:var(--safety-dim);}
+  .lookup-btn:disabled{background:#5A5C5E;cursor:default;}
+  .hint{font-size:13px;color:var(--line-light);line-height:1.5;}
+
+  .status-line{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--line-light);
+    min-height:18px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--line-light);flex:none;}
+  .dot.checking{background:var(--steel-light);animation:pulse 1s ease-in-out infinite;}
+  .dot.found{background:var(--good);}
+  .dot.notfound{background:var(--safety);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+  /* Vehicle card */
+  .vehicle-card{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;display:none;}
+  .vehicle-card.show{display:block;}
+  .vehicle-card .vmake{
+    font-size:26px;color:var(--white);margin:0 0 2px;
+  }
+  .vehicle-card .vsub{color:var(--line-light);font-size:14px;margin:0 0 14px;}
+  .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;}
+  .vgrid div{font-size:13px;}
+  .vgrid dt{color:var(--line-light);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+  .vgrid dd{margin:0;color:var(--paper);font-weight:500;}
+  .expiry-flag{
+    display:inline-block;margin-top:12px;padding:4px 9px;
+    background:rgba(232,89,12,0.15);border:1px solid var(--safety-dim);
+    color:#FFB088;font-size:12px;font-family:'IBM Plex Mono',monospace;
+  }
+
+  .not-found-box{display:none;margin-top:18px;border-top:1px solid var(--line);padding-top:16px;}
+  .not-found-box.show{display:block;}
+  .not-found-box p{color:var(--line-light);font-size:14px;line-height:1.6;margin:0 0 10px;}
+  .not-found-box .try{font-family:'IBM Plex Mono',monospace;color:var(--safety);}
+
+  /* Parts panel */
+  .parts-locked{
+    padding:40px 20px;
+    text-align:center;
+    color:var(--line-light);
+    font-size:14px;
+    line-height:1.7;
+  }
+  .search-row{
+    display:flex;gap:10px;margin-bottom:16px;
+  }
+  #partSearch{
+    flex:1;
+    background:var(--graphite);
+    border:1px solid var(--line);
+    color:var(--paper);
+    padding:11px 14px;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:15px;
+    outline:none;
+  }
+  #partSearch:focus{border-color:var(--steel-light);}
+  .cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+  .cat-tab{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--line-light);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:6px 11px;
+    cursor:pointer;
+  }
+  .cat-tab.active{border-color:var(--safety);color:var(--safety);}
+
+  .parts-list{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);}
+  .part-row{
+    background:var(--graphite-soft);
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    align-items:center;
+    gap:14px;
+    padding:12px 14px;
+  }
+  .part-row .pname{font-size:14px;color:var(--paper);}
+  .part-row .psku{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--line-light);margin-top:2px;}
+  .part-row .pprice{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--line-light);}
+  .search-part-btn{
+    background:var(--steel);color:var(--white);border:none;padding:9px 16px;
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;cursor:pointer;
+    white-space:nowrap;
+  }
+  .search-part-btn:hover{background:var(--steel-light);}
+  .search-part-btn:disabled{background:#5A5C5E;cursor:default;}
+  .no-results{padding:24px;text-align:center;color:var(--line-light);font-size:14px;}
+
+  /* Price comparison results */
+  .part-results{
+    grid-column:1 / -1;
+    border-top:1px dashed var(--line);
+    margin-top:12px;padding-top:12px;
+    display:none;
+  }
+  .part-results.show{display:block;}
+  .results-loading{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--line-light);
+    display:flex;align-items:center;gap:8px;padding:6px 0;
+  }
+  .results-loading .dot{width:7px;height:7px;border-radius:50%;background:var(--steel-light);animation:pulse 1s ease-in-out infinite;}
+  .results-groups{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  @media (max-width:760px){.results-groups{grid-template-columns:1fr;}}
+  .results-group h4{
+    margin:0 0 8px;font-size:15px;color:var(--white);
+    display:flex;align-items:center;gap:6px;
+  }
+  .source-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.04em;
+    padding:2px 6px;border:1px solid var(--line);color:var(--line-light);
+  }
+  .listing{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:9px 0;border-bottom:1px solid var(--line);
+  }
+  .listing:last-child{border-bottom:none;}
+  .listing-info{font-size:13px;}
+  .listing-title{color:var(--paper);display:block;}
+  .listing-meta{color:var(--line-light);font-size:12px;font-family:'IBM Plex Mono',monospace;}
+  .listing-price{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--white);white-space:nowrap;}
+  .listing-link{
+    display:inline-block;margin-top:2px;color:var(--safety);text-decoration:none;
+    font-size:12px;font-family:'IBM Plex Mono',monospace;
+  }
+  .listing-link:hover{text-decoration:underline;}
+  .listing-right{text-align:right;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <h1>Find Your Car Parts</h1>
+    </div>
+    <div class="bay">ENTER YOUR PLATE TO GET STARTED</div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT: Rego lookup -->
+    <div class="panel">
+      <div class="panel-head"><h2>Find the vehicle</h2></div>
+      <div class="panel-body">
+        <div class="rego-form">
+          <div class="plate-input-wrap">
+            <span class="plate-state">NSW</span>
+            <input id="regoInput" maxlength="8" placeholder="REGO" autocomplete="off">
+          </div>
+          <button class="lookup-btn" id="lookupBtn">Look up vehicle</button>
+          <div class="status-line"><span class="dot" id="statusDot"></span><span id="statusText"></span></div>
+          <div class="hint">Type a plate and press Enter or tap Look up. Try <strong style="color:var(--paper)">HE55SK</strong> — everything else will come back as no match, since this is a demo with one sample record.</div>
+        </div>
+
+        <div class="vehicle-card" id="vehicleCard">
+          <p class="vmake" id="vMake"></p>
+          <p class="vsub" id="vSub"></p>
+          <dl class="vgrid">
+            <div><dt>Colour</dt><dd id="vColour"></dd></div>
+            <div><dt>Year</dt><dd id="vYear"></dd></div>
+            <div><dt>Odometer</dt><dd id="vOdo"></dd></div>
+            <div><dt>VIN (last 6)</dt><dd id="vVin"></dd></div>
+          </dl>
+          <div class="expiry-flag" id="vExpiry"></div>
+        </div>
+
+        <div class="not-found-box" id="notFoundBox">
+          <p>No vehicle record for that plate.</p>
+          <p>Double-check the plate, or <span class="try">try HE55SK</span> to see the full flow.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Parts search -->
+    <div class="panel">
+      <div class="panel-head"><h2>Parts for this vehicle</h2></div>
+      <div class="panel-body" id="partsPanelBody">
+        <div class="parts-locked" id="partsLocked">
+          Find a vehicle on the left to search its parts catalogue.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---- Mock vehicle database ----
+const VEHICLES = {
+  "HE55SK": {
+    make: "LDV", model: "T60", variant: "Dual cab 4x4 DTC 8AT LWB multi-link",
+    colour: "Grey", year: "2023", odo: "41,280 km", vin: "K8C214",
+    rego_expiry: "14 Nov 2026", category: "ute"
+  }
+};
+
+// ---- Mock parts catalogue, keyed by vehicle category ----
+const PARTS = {
+  ute: [
+    { sku: "BRK-4021", name: "Front brake pad set", price: "$89.50" },
+    { sku: "BRK-4088", name: "Rear brake disc rotor", price: "$142.00" },
+    { sku: "OIL-1102", name: "Engine oil filter", price: "$18.90" },
+    { sku: "OIL-1150", name: "5W-30 diesel engine oil, 5L", price: "$54.00" },
+    { sku: "SUS-3390", name: "Front shock absorber", price: "$210.00" },
+    { sku: "SUS-3401", name: "Rear leaf spring bush kit", price: "$76.30" },
+    { sku: "ELE-5510", name: "12V battery, 750 CCA", price: "$255.00" },
+    { sku: "ELE-5522", name: "Headlight globe, LED H4", price: "$32.00" },
+    { sku: "AIR-2210", name: "Air filter element", price: "$24.50" },
+    { sku: "TYR-9001", name: "265/65R17 all-terrain tyre", price: "$249.00" }
+  ]
+};
+const CATS = { ute: ["All", "Brakes", "Suspension", "Electrical", "Filters", "Tyres"] };
+
+// ---- Mock marketplace results, keyed by SKU ----
+// In the real version, the eBay side would call the eBay Browse API
+// (item_summary/search, filtered by compatibility to make/model/year),
+// and the Repco side would either use a trade data feed if one is
+// available, or fall back to a generated Repco search link.
+const RESULTS = {
+  "BRK-4021": {
+    ebay: [
+      { title: "Bendix front brake pad set, ceramic", meta: "New · Free postage", price: "$74.95" },
+      { title: "Front brake pads, DBA + pad set", meta: "New · 4.9★ seller", price: "$82.00" }
+    ],
+    repco: [
+      { title: "Repco Reinz front brake pad set", meta: "In stock · Click & collect", price: "$89.99" }
+    ],
+    supercheap: [
+      { title: "Bendix General CT front brake pads", meta: "In stock · Click & collect", price: "$84.99" }
+    ]
+  },
+  "BRK-4088": {
+    ebay: [
+      { title: "DBA 4000 series front rotor, slotted", meta: "New · Free postage", price: "$131.50" },
+      { title: "Bendix rear brake disc rotor, pair", meta: "New · 4.8★ seller", price: "$168.00" }
+    ],
+    repco: [
+      { title: "Repco rear brake disc rotor", meta: "In stock · Click & collect", price: "$142.00" }
+    ],
+    supercheap: [
+      { title: "Bendix rear brake disc rotor", meta: "In stock · Click & collect", price: "$149.99" }
+    ]
+  },
+  "OIL-1102": {
+    ebay: [
+      { title: "Ryco oil filter Z516", meta: "New · Free postage", price: "$15.90" },
+      { title: "K&N oil filter, spin-on", meta: "New · 4.9★ seller", price: "$22.40" }
+    ],
+    repco: [
+      { title: "Repco oil filter R2635P", meta: "In stock · Click & collect", price: "$18.90" }
+    ],
+    supercheap: [
+      { title: "Ryco oil filter Z516", meta: "In stock · Click & collect", price: "$17.99" }
+    ]
+  },
+  "OIL-1150": {
+    ebay: [
+      { title: "Castrol Vecton 5W-30 diesel, 5L", meta: "New · Free postage", price: "$48.00" },
+      { title: "Penrite Enviro+ 5W-30, 5L", meta: "New · 4.9★ seller", price: "$51.50" }
+    ],
+    repco: [
+      { title: "Castrol Vecton 5W-30 diesel, 5L", meta: "In stock · Click & collect", price: "$54.00" }
+    ],
+    supercheap: [
+      { title: "Penrite Enviro+ 5W-30, 5L", meta: "In stock · Click & collect", price: "$49.99" }
+    ]
+  },
+  "SUS-3390": {
+    ebay: [
+      { title: "Monroe front shock absorber", meta: "New · Free postage", price: "$179.00" },
+      { title: "KYB Excel-G front shock", meta: "New · 4.8★ seller", price: "$195.00" }
+    ],
+    repco: [
+      { title: "Repco Monroe front shock absorber", meta: "In stock · Ships in 2 days", price: "$210.00" }
+    ],
+    supercheap: [
+      { title: "KYB Excel-G front shock absorber", meta: "In stock · Click & collect", price: "$199.99" }
+    ]
+  },
+  "SUS-3401": {
+    ebay: [
+      { title: "Rear leaf spring bush kit, poly", meta: "New · Free postage", price: "$59.00" },
+      { title: "OE-style leaf spring bush kit", meta: "New · 4.7★ seller", price: "$68.50" }
+    ],
+    repco: [
+      { title: "Repco rear leaf spring bush kit", meta: "In stock · Click & collect", price: "$76.30" }
+    ],
+    supercheap: [
+      { title: "Rear leaf spring bush kit, polyurethane", meta: "In stock · Click & collect", price: "$71.99" }
+    ]
+  },
+  "ELE-5510": {
+    ebay: [
+      { title: "Century 12V battery, 750 CCA", meta: "New · Local pickup", price: "$219.00" },
+      { title: "Century 12V battery, 750 CCA", meta: "New · 4.9★ seller", price: "$235.00" }
+    ],
+    repco: [
+      { title: "Century 12V battery, 750 CCA", meta: "In stock · Fitted in-store", price: "$255.00" }
+    ],
+    supercheap: [
+      { title: "Century 12V battery, 750 CCA", meta: "In stock · Fitted in-store", price: "$239.99" }
+    ]
+  },
+  "ELE-5522": {
+    ebay: [
+      { title: "Osram Night Breaker H4 LED, pair", meta: "New · Free postage", price: "$26.90" },
+      { title: "Philips X-tremeVision H4, pair", meta: "New · 4.9★ seller", price: "$29.50" }
+    ],
+    repco: [
+      { title: "Repco LED headlight globe H4", meta: "In stock · Click & collect", price: "$32.00" }
+    ],
+    supercheap: [
+      { title: "Osram Night Breaker H4 LED, pair", meta: "In stock · Click & collect", price: "$28.99" }
+    ]
+  },
+  "AIR-2210": {
+    ebay: [
+      { title: "K&N washable air filter", meta: "New · Free postage", price: "$19.90" },
+      { title: "Ryco air filter A1234", meta: "New · 4.9★ seller", price: "$21.00" }
+    ],
+    repco: [
+      { title: "Repco air filter element", meta: "In stock · Click & collect", price: "$24.50" }
+    ],
+    supercheap: [
+      { title: "Ryco air filter A1234", meta: "In stock · Click & collect", price: "$22.99" }
+    ]
+  },
+  "TYR-9001": {
+    ebay: [
+      { title: "265/65R17 all-terrain, single tyre", meta: "New · Freight quoted at checkout", price: "$219.00" },
+      { title: "265/65R17 all-terrain, single tyre", meta: "New · 4.8★ seller", price: "$232.00" }
+    ],
+    repco: [
+      { title: "265/65R17 all-terrain tyre", meta: "In stock · Fitted in-store", price: "$249.00" }
+    ],
+    supercheap: [
+      { title: "265/65R17 all-terrain tyre", meta: "In stock · Fitted in-store", price: "$239.99" }
+    ]
+  }
+};
+const TAG = {
+  "BRK-4021":"Brakes","BRK-4088":"Brakes","OIL-1102":"Filters","OIL-1150":"Filters",
+  "SUS-3390":"Suspension","SUS-3401":"Suspension","ELE-5510":"Electrical","ELE-5522":"Electrical",
+  "AIR-2210":"Filters","TYR-9001":"Tyres"
+};
+
+let currentVehicle = null;
+let currentPlate = "";
+let activeCat = "All";
+
+const regoInput = document.getElementById('regoInput');
+const lookupBtn = document.getElementById('lookupBtn');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const vehicleCard = document.getElementById('vehicleCard');
+const notFoundBox = document.getElementById('notFoundBox');
+const partsPanelBody = document.getElementById('partsPanelBody');
+const partsLocked = document.getElementById('partsLocked');
+
+function setStatus(state, text){
+  statusDot.className = 'dot' + (state ? ' ' + state : '');
+  statusText.textContent = text || '';
+}
+
+function doLookup(){
+  const plate = regoInput.value.trim().toUpperCase();
+  if(!plate) return;
+  vehicleCard.classList.remove('show');
+  notFoundBox.classList.remove('show');
+  lookupBtn.disabled = true;
+  setStatus('checking', 'Checking registration…');
+
+  setTimeout(() => {
+    lookupBtn.disabled = false;
+    const v = VEHICLES[plate];
+    if(v){
+      currentVehicle = v;
+      currentPlate = plate;
+      setStatus('found', 'Match found');
+      document.getElementById('vMake').textContent = v.make + ' ' + v.model;
+      document.getElementById('vSub').textContent = v.variant;
+      document.getElementById('vColour').textContent = v.colour;
+      document.getElementById('vYear').textContent = v.year;
+      document.getElementById('vOdo').textContent = v.odo;
+      document.getElementById('vVin').textContent = '…' + v.vin;
+      document.getElementById('vExpiry').textContent = 'Rego expires ' + v.rego_expiry;
+      vehicleCard.classList.add('show');
+      renderParts();
+    } else {
+      currentVehicle = null;
+      currentPlate = "";
+      setStatus('notfound', 'No match');
+      notFoundBox.classList.add('show');
+      lockParts();
+    }
+  }, 900);
+}
+
+lookupBtn.addEventListener('click', doLookup);
+regoInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') doLookup(); });
+
+function lockParts(){
+  partsPanelBody.innerHTML = '<div class="parts-locked">Find a vehicle on the left to search its parts catalogue.</div>';
+}
+
+function renderParts(){
+  const cat = currentVehicle.category;
+  partsPanelBody.innerHTML = `
+    <div class="search-row">
+      <input id="partSearch" placeholder="Search parts — e.g. brake, filter, battery" autocomplete="off">
+    </div>
+    <div class="cat-tabs" id="catTabs"></div>
+    <div class="parts-list" id="partsList"></div>
+  `;
+  const tabWrap = document.getElementById('catTabs');
+  activeCat = "All";
+  CATS[cat].forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'cat-tab' + (c === 'All' ? ' active' : '');
+    b.textContent = c;
+    b.addEventListener('click', () => {
+      activeCat = c;
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      b.classList.add('active');
+      filterAndRender();
+    });
+    tabWrap.appendChild(b);
+  });
+  document.getElementById('partSearch').addEventListener('input', filterAndRender);
+  filterAndRender();
+}
+
+function filterAndRender(){
+  const q = (document.getElementById('partSearch')?.value || '').toLowerCase();
+  const cat = currentVehicle.category;
+  const list = PARTS[cat].filter(p => {
+    const matchesText = p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
+    const matchesCat = activeCat === 'All' || TAG[p.sku] === activeCat;
+    return matchesText && matchesCat;
+  });
+  const listEl = document.getElementById('partsList');
+  if(list.length === 0){
+    listEl.innerHTML = '<div class="no-results">No parts match that search.</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  list.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'part-row';
+    row.innerHTML = `
+      <div>
+        <span class="pname">${p.name}</span>
+        <span class="psku">${p.sku}</span>
+      </div>
+      <span class="pprice">from ${p.price}</span>
+      <button type="button" class="search-part-btn">Search</button>
+      <div class="part-results" data-sku="${p.sku}"></div>
+    `;
+    const searchBtn = row.querySelector('.search-part-btn');
+    const resultsEl = row.querySelector('.part-results');
+    searchBtn.addEventListener('click', () => {
+      const alreadyOpen = resultsEl.classList.contains('show');
+      if(alreadyOpen){
+        resultsEl.classList.remove('show');
+        searchBtn.textContent = 'Search';
+        return;
+      }
+      searchBtn.textContent = 'Hide';
+      resultsEl.classList.add('show');
+      resultsEl.innerHTML = `<div class="results-loading"><span class="dot"></span>Searching eBay, Repco & Supercheap Auto for "${p.name}"…</div>`;
+      searchBtn.disabled = true;
+      setTimeout(() => {
+        renderPartResults(resultsEl, p);
+        searchBtn.disabled = false;
+      }, 800);
+    });
+    listEl.appendChild(row);
+  });
+}
+
+function renderPartResults(container, part){
+  const data = RESULTS[part.sku];
+  const ebayItems = data ? data.ebay : [];
+  const repcoItems = data ? data.repco : [];
+  const supercheapItems = data ? data.supercheap : [];
+  const ebaySearchUrl = 'https://www.ebay.com.au/sch/i.html?_nkw=' + encodeURIComponent(part.name + ' ' + (currentVehicle.make + ' ' + currentVehicle.model));
+  const repcoSearchUrl = 'https://www.repco.com.au/search?text=' + encodeURIComponent(part.name);
+  const supercheapSearchUrl = 'https://www.supercheapauto.com.au/search?q=' + encodeURIComponent(part.name);
+
+  const ebayHtml = ebayItems.map(l => `
+    <div class="listing">
+      <div class="listing-info">
+        <span class="listing-title">${l.title}</span>
+        <span class="listing-meta">${l.meta}</span>
+      </div>
+      <div class="listing-right">
+        <span class="listing-price">${l.price}</span><br>
+        <a class="listing-link" href="${ebaySearchUrl}" target="_blank" rel="noopener">View on eBay ↗</a>
+      </div>
+    </div>
+  `).join('');
+
+  const repcoHtml = repcoItems.map(l => `
+    <div class="listing">
+      <div class="listing-info">
+        <span class="listing-title">${l.title}</span>
+        <span class="listing-meta">${l.meta}</span>
+      </div>
+      <div class="listing-right">
+        <span class="listing-price">${l.price}</span><br>
+        <a class="listing-link" href="${repcoSearchUrl}" target="_blank" rel="noopener">View on Repco ↗</a>
+      </div>
+    </div>
+  `).join('');
+
+  const supercheapHtml = supercheapItems.map(l => `
+    <div class="listing">
+      <div class="listing-info">
+        <span class="listing-title">${l.title}</span>
+        <span class="listing-meta">${l.meta}</span>
+      </div>
+      <div class="listing-right">
+        <span class="listing-price">${l.price}</span><br>
+        <a class="listing-link" href="${supercheapSearchUrl}" target="_blank" rel="noopener">View on Supercheap ↗</a>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="results-groups">
+      <div class="results-group">
+        <h4>eBay <span class="source-tag">MARKETPLACE</span></h4>
+        ${ebayHtml || '<div class="no-results">No listings found.</div>'}
+      </div>
+      <div class="results-group">
+        <h4>Repco <span class="source-tag">RETAILER</span></h4>
+        ${repcoHtml || '<div class="no-results">No listings found.</div>'}
+      </div>
+      <div class="results-group">
+        <h4>Supercheap Auto <span class="source-tag">RETAILER</span></h4>
+        ${supercheapHtml || '<div class="no-results">No listings found.</div>'}
+      </div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
