@@ -3,33 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carmate — Find parts for your car</title>
+<title>Carmate — Garage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Public+Sans:wght@400;500;600;700&family=Space+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#14171C;
-    --navy:#1E2733;
-    --navy-deep:#171F28;
-    --navy-panel:#232E3B;
+    --void:#0D1114;
+    --panel:#171C21;
+    --panel-2:#1E252B;
+    --hair:#2A3238;
     --paper:#F6F1E4;
-    --paper-dim:#E8E1CC;
+    --ash:#8B93A0;
     --signal:#F2B705;
     --signal-deep:#C89404;
-    --route:#1F6F54;
-    --route-light:#2F9E74;
-    --asphalt:#3D4552;
-    --asphalt-light:#8B93A0;
-    --white:#FFFFFF;
+    --route:#2F9E74;
+    --cyan:#4FD6E0;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:var(--navy);
+    background:var(--void);
     color:var(--paper);
     font-family:'Public Sans',sans-serif;
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
+    padding-bottom:96px; /* room for dock */
   }
   h1,h2,h3,.display{
     font-family:'Big Shoulders Display',sans-serif;
@@ -37,204 +35,165 @@
     line-height:0.95;
     margin:0;
   }
-  ::selection{background:var(--signal);color:var(--ink);}
+  ::selection{background:var(--signal);color:var(--void);}
 
-  .shell{max-width:900px;margin:0 auto;padding:0 24px 100px;}
-
-  header.top{
-    max-width:900px;margin:0 auto;
+  /* ---- Top bar ---- */
+  .topbar{
     display:flex;justify-content:space-between;align-items:center;
-    padding:26px 24px 0;
+    padding:22px 28px;
+    border-bottom:1px solid var(--hair);
   }
-  .wordmark{
-    font-family:'Big Shoulders Display',sans-serif;
-    font-weight:800;font-size:26px;color:var(--paper);
-    letter-spacing:0.01em;
+  .garage-word{
+    font-size:26px;letter-spacing:0.04em;color:var(--paper);
   }
-  .wordmark span{color:var(--signal);}
-  .tagline{font-size:13px;color:var(--asphalt-light);}
+  .garage-word span{color:var(--signal);}
 
-  .hero{text-align:center;padding:56px 0 40px;}
-  .hero h1{
-    font-size:clamp(38px,7vw,64px);
-    color:var(--paper);
-    max-width:620px;margin:0 auto 12px;
+  .plate-entry{display:flex;align-items:center;gap:10px;}
+  .plate-mini{
+    display:flex;background:var(--paper);border-radius:5px;overflow:hidden;
   }
-  .hero p{
-    color:var(--asphalt-light);
-    font-size:16px;
-    max-width:400px;margin:0 auto 34px;
-    line-height:1.5;
+  .plate-mini .marque{
+    background:var(--route);color:#fff;font-family:'Big Shoulders Display';font-weight:800;
+    font-size:9px;display:flex;align-items:center;justify-content:center;padding:0 6px;
   }
-
-  .plate-rig{display:flex;flex-direction:column;align-items:center;gap:18px;}
-  .plate{
-    display:flex;
-    background:var(--paper);
-    border-radius:8px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.35), inset 0 0 0 3px var(--ink);
-    overflow:hidden;
-    width:min(92vw,440px);
-  }
-  .plate-marque{
-    background:var(--route);
-    color:var(--white);
-    font-family:'Big Shoulders Display',sans-serif;
-    font-weight:800;
-    font-size:13px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:0 10px;
-    letter-spacing:0.02em;
-  }
-  .plate-marque small{font-family:'Public Sans',sans-serif;font-weight:600;font-size:9px;color:rgba(255,255,255,0.75);margin-top:1px;}
   #regoInput{
-    flex:1;border:none;outline:none;
-    background:var(--paper);color:var(--ink);
-    font-family:'Space Mono',monospace;font-weight:700;
-    font-size:clamp(24px,6vw,32px);
-    letter-spacing:0.14em;text-align:center;
-    padding:16px 6px;text-transform:uppercase;
+    border:none;outline:none;background:var(--paper);color:var(--void);
+    font-family:'Space Mono',monospace;font-weight:700;font-size:16px;letter-spacing:0.1em;
+    text-align:center;padding:9px 10px;width:120px;text-transform:uppercase;
   }
   #regoInput::placeholder{color:#B7B2A4;}
-
   .lookup-btn{
-    background:var(--signal);color:var(--ink);
-    border:none;border-radius:999px;
-    font-family:'Public Sans',sans-serif;font-weight:700;font-size:15px;
-    padding:14px 32px;cursor:pointer;
-    transition:transform 0.12s ease, background 0.15s ease;
+    background:var(--signal);color:var(--void);border:none;border-radius:5px;
+    font-family:'Public Sans',sans-serif;font-weight:700;font-size:13px;
+    padding:10px 18px;cursor:pointer;white-space:nowrap;
   }
-  .lookup-btn:hover{background:var(--signal-deep);transform:translateY(-1px);}
-  .lookup-btn:disabled{background:var(--asphalt);color:var(--asphalt-light);cursor:default;transform:none;}
+  .lookup-btn:hover{background:var(--signal-deep);}
+  .lookup-btn:disabled{background:var(--hair);color:var(--ash);cursor:default;}
 
-  .status-line{
-    min-height:20px;font-size:13px;color:var(--asphalt-light);
-    display:flex;align-items:center;gap:8px;
-  }
+  .shell{max-width:1100px;margin:0 auto;padding:0 28px;}
+  .status-line{font-size:12px;color:var(--ash);text-align:right;padding:6px 28px 0;min-height:18px;}
   .road-loader{
-    width:34px;height:4px;border-radius:2px;
-    background-image:repeating-linear-gradient(90deg,var(--signal) 0 6px,transparent 6px 12px);
-    background-size:200% 100%;
-    animation:roll 0.7s linear infinite;
-    display:none;
+    display:inline-block;width:28px;height:3px;border-radius:2px;
+    background-image:repeating-linear-gradient(90deg,var(--signal) 0 5px,transparent 5px 10px);
+    background-size:200% 100%;animation:roll 0.7s linear infinite;vertical-align:middle;margin-right:6px;
   }
-  .road-loader.show{display:block;}
-  @keyframes roll{from{background-position:0 0;}to{background-position:-24px 0;}}
-  .hint{font-size:13px;color:var(--asphalt-light);}
-  .hint strong{color:var(--signal);font-weight:600;}
+  @keyframes roll{from{background-position:0 0;}to{background-position:-20px 0;}}
 
-  .lane-divider{
-    height:0;border-top:3px dashed var(--signal);
-    opacity:0.55;margin:0 0 48px;
+  /* ---- Idle state ---- */
+  .idle{
+    text-align:center;padding:110px 20px;color:var(--ash);
   }
+  .idle h2{font-size:32px;color:var(--paper);margin-bottom:10px;}
+  .idle p{font-size:14px;max-width:340px;margin:0 auto;}
+  .idle strong{color:var(--signal);}
 
-  .docket{
-    display:none;
-    background:var(--navy-panel);
-    border-radius:10px;
-    padding:26px 28px;
-    margin-bottom:20px;
-    position:relative;
-    animation:printIn 0.45s ease both;
-  }
-  .docket.show{display:block;}
-  @keyframes printIn{
-    from{opacity:0;transform:translateY(-14px);}
-    to{opacity:1;transform:translateY(0);}
-  }
-  .docket::before{
-    content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;
-    background:repeating-linear-gradient(90deg,var(--asphalt) 0 8px,transparent 8px 16px);
-  }
-  .docket-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
-  .docket h2{font-size:32px;color:var(--paper);}
-  .docket .variant{color:var(--asphalt-light);font-size:14px;margin-top:4px;}
-  .plate-chip{
-    font-family:'Space Mono',monospace;font-weight:700;font-size:13px;
-    background:var(--paper);color:var(--ink);
-    padding:6px 12px;border-radius:5px;letter-spacing:0.08em;
-    white-space:nowrap;
-  }
-  .docket-grid{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:16px 20px;
-  }
-  @media (max-width:640px){.docket-grid{grid-template-columns:repeat(2,1fr);}}
-  .docket-grid dt{font-size:11px;color:var(--asphalt-light);margin-bottom:3px;}
-  .docket-grid dd{margin:0;font-size:15px;color:var(--paper);font-weight:600;}
-  .expiry-note{
-    display:inline-flex;align-items:center;gap:6px;
-    margin-top:16px;font-size:13px;color:var(--route-light);
-  }
-  .expiry-note::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--route-light);}
-
-  .not-found{
-    display:none;background:var(--navy-panel);border-radius:10px;
-    padding:22px 26px;margin-bottom:20px;
-  }
+  .not-found{display:none;text-align:center;padding:110px 20px;}
   .not-found.show{display:block;}
-  .not-found p{margin:0 0 6px;color:var(--paper);font-size:15px;}
-  .not-found p:last-child{margin:0;color:var(--asphalt-light);font-size:14px;}
+  .not-found h2{font-size:28px;color:var(--paper);margin-bottom:8px;}
+  .not-found p{color:var(--ash);font-size:14px;}
   .not-found strong{color:var(--signal);}
 
-  .parts-section{display:none;}
-  .parts-section.show{display:block;}
-  .parts-heading{font-size:26px;color:var(--paper);margin-bottom:16px;}
+  /* ---- Garage view ---- */
+  .garage{display:none;padding:36px 0 20px;}
+  .garage.show{display:block;}
+  .garage-grid{
+    display:grid;grid-template-columns:260px 1fr;gap:36px;align-items:center;
+  }
+  @media (max-width:800px){.garage-grid{grid-template-columns:1fr;}}
 
+  .spec-col{display:flex;flex-direction:column;gap:18px;}
+  .vname{font-size:34px;color:var(--paper);}
+  .vplate-chip{
+    display:inline-block;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;
+    background:var(--paper);color:var(--void);padding:4px 10px;border-radius:4px;
+    letter-spacing:0.08em;margin-top:6px;
+  }
+  .status-chip{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--route);
+    margin-top:10px;
+  }
+  .status-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--route);}
+
+  .spec-list{border-top:1px solid var(--hair);margin-top:6px;}
+  .spec-row{
+    display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--hair);
+    font-size:13px;
+  }
+  .spec-row .k{color:var(--ash);}
+  .spec-row .v{color:var(--paper);font-weight:600;font-family:'Space Mono',monospace;font-size:12px;}
+
+  /* ---- Hero illustration ---- */
+  .hero-stage{
+    position:relative;
+    background:radial-gradient(ellipse at 50% 30%, rgba(79,214,224,0.08), transparent 60%), var(--panel);
+    border-radius:14px;
+    padding:30px;
+    min-height:320px;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  .hero-stage::before{
+    content:'';position:absolute;left:0;right:0;bottom:38px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--hair) 20%,var(--hair) 80%,transparent);
+  }
+  .hero-stage svg{width:100%;max-width:420px;filter:drop-shadow(0 22px 18px rgba(0,0,0,0.5));}
+
+  /* ---- Dock ---- */
+  .dock{
+    position:fixed;left:0;right:0;bottom:0;
+    background:var(--panel);border-top:1px solid var(--hair);
+    display:flex;justify-content:center;gap:6px;
+    padding:10px 14px;z-index:10;
+    overflow-x:auto;
+  }
+  .dock-btn{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    background:none;border:none;color:var(--ash);cursor:pointer;
+    padding:8px 16px;border-radius:8px;font-family:'Public Sans',sans-serif;font-size:11px;
+    min-width:64px;
+  }
+  .dock-btn svg{width:22px;height:22px;stroke:var(--ash);fill:none;stroke-width:1.6;}
+  .dock-btn.active{color:var(--signal);background:var(--panel-2);}
+  .dock-btn.active svg{stroke:var(--signal);}
+  .dock-btn:disabled{opacity:0.35;cursor:default;}
+
+  /* ---- Parts panel ---- */
+  .parts-section{display:none;padding:8px 0 40px;}
+  .parts-section.show{display:block;}
+  .parts-heading{font-size:24px;color:var(--paper);margin-bottom:16px;}
   .search-row{margin-bottom:14px;}
   #partSearch{
-    width:100%;background:var(--navy-panel);border:1px solid var(--asphalt);
-    color:var(--paper);border-radius:8px;
-    padding:12px 16px;font-family:'Public Sans',sans-serif;font-size:15px;outline:none;
+    width:100%;background:var(--panel);border:1px solid var(--hair);
+    color:var(--paper);border-radius:8px;padding:12px 16px;
+    font-family:'Public Sans',sans-serif;font-size:15px;outline:none;
   }
   #partSearch:focus{border-color:var(--signal);}
-  #partSearch::placeholder{color:var(--asphalt-light);}
-
-  .cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
-  .cat-chip{
-    background:transparent;border:1px solid var(--asphalt);color:var(--asphalt-light);
-    border-radius:999px;font-size:13px;font-family:'Public Sans',sans-serif;font-weight:600;
-    padding:7px 15px;cursor:pointer;
-  }
-  .cat-chip.active{background:var(--signal);border-color:var(--signal);color:var(--ink);}
+  #partSearch::placeholder{color:var(--ash);}
 
   .parts-list{display:flex;flex-direction:column;gap:10px;}
-  .part-row{
-    background:var(--navy-panel);border-radius:10px;
-    padding:16px 18px;
-  }
-  .part-row-top{
-    display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
-  }
+  .part-row{background:var(--panel);border-radius:10px;padding:16px 18px;}
+  .part-row-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
   .part-name{font-size:16px;color:var(--paper);font-weight:600;}
-  .part-sku{display:block;font-family:'Space Mono',monospace;font-size:11px;color:var(--asphalt-light);margin-top:3px;}
-  .part-price{font-family:'Space Mono',monospace;font-size:13px;color:var(--asphalt-light);white-space:nowrap;}
+  .part-sku{display:block;font-family:'Space Mono',monospace;font-size:11px;color:var(--ash);margin-top:3px;}
+  .part-price{font-family:'Space Mono',monospace;font-size:13px;color:var(--ash);white-space:nowrap;}
   .search-part-btn{
     background:transparent;color:var(--signal);border:1.5px solid var(--signal);
     border-radius:999px;padding:8px 18px;font-weight:700;font-size:13px;
     font-family:'Public Sans',sans-serif;cursor:pointer;white-space:nowrap;
   }
-  .search-part-btn:hover{background:var(--signal);color:var(--ink);}
+  .search-part-btn:hover{background:var(--signal);color:var(--void);}
   .search-part-btn:disabled{opacity:0.5;cursor:default;}
-  .no-results{padding:20px;text-align:center;color:var(--asphalt-light);font-size:14px;}
+  .no-results{padding:20px;text-align:center;color:var(--ash);font-size:14px;}
 
-  .part-results{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--asphalt);}
+  .part-results{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--hair);}
   .part-results.show{display:block;}
-  .results-loading{font-size:13px;color:var(--asphalt-light);display:flex;align-items:center;gap:10px;}
+  .results-loading{font-size:13px;color:var(--ash);display:flex;align-items:center;}
   .results-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
   @media (max-width:700px){.results-groups{grid-template-columns:1fr;}}
-
-  .tag{
-    position:relative;
-    background:var(--paper);color:var(--ink);
-    border-radius:4px 10px 10px 4px;
-    padding:14px 14px 14px 20px;
-  }
-  .tag::before{
-    content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);
-    width:8px;height:8px;border-radius:50%;background:var(--navy);
-  }
+  .tag{position:relative;background:var(--paper);color:var(--void);border-radius:4px 10px 10px 4px;padding:14px 14px 14px 20px;}
+  .tag::before{content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--void);}
   .tag-source{font-size:11px;font-weight:700;color:var(--route);margin-bottom:8px;}
-  .listing{padding:8px 0;border-top:1px dashed var(--paper-dim);}
+  .listing{padding:8px 0;border-top:1px dashed #E8E1CC;}
   .listing:first-of-type{border-top:none;padding-top:0;}
   .listing-title{display:block;font-size:13px;font-weight:600;line-height:1.35;}
   .listing-meta{display:block;font-size:11px;color:#6B6656;margin-top:2px;}
@@ -244,69 +203,77 @@
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="wordmark">Car<span>mate</span></div>
-  <div class="tagline">Find parts for your car</div>
-</header>
+<div class="topbar">
+  <div class="garage-word">Car<span>mate</span> Garage</div>
+  <div class="plate-entry">
+    <div class="plate-mini">
+      <div class="marque">NSW</div>
+      <input id="regoInput" maxlength="8" placeholder="REGO" autocomplete="off">
+    </div>
+    <button class="lookup-btn" id="lookupBtn">Enter</button>
+  </div>
+</div>
+<div class="status-line" id="statusLine"></div>
 
 <div class="shell">
-  <div class="hero">
-    <h1>What's your rego?</h1>
-    <p>Punch it in and we'll find your car, then track down the parts you need.</p>
-    <div class="plate-rig">
-      <div class="plate">
-        <div class="plate-marque">NSW<small>AUS</small></div>
-        <input id="regoInput" maxlength="8" placeholder="REGO" autocomplete="off">
-      </div>
-      <button class="lookup-btn" id="lookupBtn">Find my car</button>
-      <div class="status-line">
-        <span class="road-loader" id="roadLoader"></span>
-        <span id="statusText"></span>
-      </div>
-      <div class="hint">Try <strong>HE55SK</strong> to see it in action.</div>
-    </div>
-  </div>
-
-  <div class="lane-divider"></div>
-
-  <div class="docket" id="vehicleCard">
-    <div class="docket-top">
-      <div>
-        <h2 id="vMake"></h2>
-        <div class="variant" id="vSub"></div>
-      </div>
-      <div class="plate-chip" id="vPlate"></div>
-    </div>
-    <dl class="docket-grid">
-      <div><dt>Colour</dt><dd id="vColour"></dd></div>
-      <div><dt>Year</dt><dd id="vYear"></dd></div>
-      <div><dt>Odometer</dt><dd id="vOdo"></dd></div>
-      <div><dt>VIN</dt><dd id="vVin"></dd></div>
-    </dl>
-    <div class="expiry-note" id="vExpiry"></div>
+  <div class="idle" id="idleState">
+    <h2>Your garage is empty</h2>
+    <p>Enter your plate up top and we'll pull your car straight in. Try <strong>HE55SK</strong>.</p>
   </div>
 
   <div class="not-found" id="notFoundBox">
-    <p>No vehicle found for that plate.</p>
-    <p>Double-check what you typed, or try <strong>HE55SK</strong> to see how it works.</p>
+    <h2>No car on record</h2>
+    <p>Double check the plate, or try <strong>HE55SK</strong> to see it work.</p>
+  </div>
+
+  <div class="garage" id="garageView">
+    <div class="garage-grid">
+      <div class="spec-col">
+        <div>
+          <div class="vname" id="vMake"></div>
+          <div class="vplate-chip" id="vPlate"></div>
+          <div class="status-chip" id="vExpiry"></div>
+        </div>
+        <div class="spec-list" id="specList"></div>
+      </div>
+      <div class="hero-stage">
+        <svg viewBox="0 0 480 260" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="240" cy="228" rx="190" ry="14" fill="#000" opacity="0.35"/>
+          <path d="M55 175 L70 120 Q90 95 130 92 L175 70 Q210 58 250 58 L305 58 Q345 60 368 85 L400 118 L430 128 Q450 134 450 155 L450 178 L420 178 Q416 158 396 158 Q376 158 372 178 L165 178 Q161 158 141 158 Q121 158 117 178 L55 178 Z"
+                fill="#232B32" stroke="#3A444D" stroke-width="2"/>
+          <path d="M180 92 L215 70 Q230 62 250 62 L300 62 Q328 64 344 82 L364 108 Z" fill="#171C21" stroke="#3A444D" stroke-width="1.5"/>
+          <line x1="255" y1="63" x2="255" y2="107" stroke="#3A444D" stroke-width="1.5"/>
+          <rect x="60" y="150" width="30" height="10" rx="2" fill="var(--signal)" opacity="0.85"/>
+          <rect x="405" y="150" width="26" height="9" rx="2" fill="var(--cyan)" opacity="0.7"/>
+          <circle cx="141" cy="178" r="26" fill="#0D1114" stroke="#3A444D" stroke-width="3"/>
+          <circle cx="141" cy="178" r="11" fill="#3A444D"/>
+          <circle cx="396" cy="178" r="26" fill="#0D1114" stroke="#3A444D" stroke-width="3"/>
+          <circle cx="396" cy="178" r="11" fill="#3A444D"/>
+        </svg>
+      </div>
+    </div>
   </div>
 
   <div class="parts-section" id="partsSection">
-    <h2 class="parts-heading" id="partsHeading">Parts for your car</h2>
+    <h2 class="parts-heading" id="partsHeading">Parts</h2>
     <div class="search-row">
       <input id="partSearch" placeholder="Search parts — brakes, filter, battery…" autocomplete="off">
     </div>
-    <div class="cat-row" id="catRow"></div>
     <div class="parts-list" id="partsList"></div>
   </div>
 </div>
+
+<div class="dock" id="dock"></div>
 
 <script>
 const VEHICLES = {
   "HE55SK": {
     make: "LDV", model: "T60", variant: "Dual cab 4x4 DTC 8AT LWB multi-link",
     colour: "Grey", year: "2023", odo: "41,280 km", vin: "…K8C214",
-    rego_expiry: "14 Nov 2026", category: "ute"
+    rego_expiry: "14 Nov 2026", category: "ute",
+    engine: "2.0L twin-turbo diesel", drivetrain: "4WD, 8-spd auto",
+    power: "160 kW @ 3,800 rpm", torque: "500 Nm @ 1,500–2,400 rpm",
+    weight: "2,150 kg (kerb)", fuel: "Diesel"
   }
 };
 
@@ -324,7 +291,6 @@ const PARTS = {
     { sku: "TYR-9001", name: "265/65R17 all-terrain tyre", price: "$219.00" }
   ]
 };
-const CATS = { ute: ["All", "Brakes", "Suspension", "Electrical", "Filters", "Tyres"] };
 const TAG_CAT = {
   "BRK-4021":"Brakes","BRK-4088":"Brakes","OIL-1102":"Filters","OIL-1150":"Filters",
   "SUS-3390":"Suspension","SUS-3401":"Suspension","ELE-5510":"Electrical","ELE-5522":"Electrical",
@@ -332,111 +298,92 @@ const TAG_CAT = {
 };
 
 const RESULTS = {
-  "BRK-4021": {
-    ebay: [{ title: "Bendix front brake pad set, ceramic", meta: "New · Free postage", price: "$74.95" },
-           { title: "Front brake pads, DBA + pad set", meta: "New · 4.9★ seller", price: "$82.00" }],
-    repco: [{ title: "Repco Reinz front brake pad set", meta: "In stock · Click & collect", price: "$89.99" }],
-    supercheap: [{ title: "Bendix General CT front brake pads", meta: "In stock · Click & collect", price: "$84.99" }]
-  },
-  "BRK-4088": {
-    ebay: [{ title: "DBA 4000 series front rotor, slotted", meta: "New · Free postage", price: "$131.50" },
-           { title: "Bendix rear brake disc rotor, pair", meta: "New · 4.8★ seller", price: "$168.00" }],
-    repco: [{ title: "Repco rear brake disc rotor", meta: "In stock · Click & collect", price: "$142.00" }],
-    supercheap: [{ title: "Bendix rear brake disc rotor", meta: "In stock · Click & collect", price: "$149.99" }]
-  },
-  "OIL-1102": {
-    ebay: [{ title: "Ryco oil filter Z516", meta: "New · Free postage", price: "$15.90" },
-           { title: "K&N oil filter, spin-on", meta: "New · 4.9★ seller", price: "$22.40" }],
-    repco: [{ title: "Repco oil filter R2635P", meta: "In stock · Click & collect", price: "$18.90" }],
-    supercheap: [{ title: "Ryco oil filter Z516", meta: "In stock · Click & collect", price: "$17.99" }]
-  },
-  "OIL-1150": {
-    ebay: [{ title: "Castrol Vecton 5W-30 diesel, 5L", meta: "New · Free postage", price: "$48.00" },
-           { title: "Penrite Enviro+ 5W-30, 5L", meta: "New · 4.9★ seller", price: "$51.50" }],
-    repco: [{ title: "Castrol Vecton 5W-30 diesel, 5L", meta: "In stock · Click & collect", price: "$54.00" }],
-    supercheap: [{ title: "Penrite Enviro+ 5W-30, 5L", meta: "In stock · Click & collect", price: "$49.99" }]
-  },
-  "SUS-3390": {
-    ebay: [{ title: "Monroe front shock absorber", meta: "New · Free postage", price: "$179.00" },
-           { title: "KYB Excel-G front shock", meta: "New · 4.8★ seller", price: "$195.00" }],
-    repco: [{ title: "Repco Monroe front shock absorber", meta: "In stock · Ships in 2 days", price: "$210.00" }],
-    supercheap: [{ title: "KYB Excel-G front shock absorber", meta: "In stock · Click & collect", price: "$199.99" }]
-  },
-  "SUS-3401": {
-    ebay: [{ title: "Rear leaf spring bush kit, poly", meta: "New · Free postage", price: "$59.00" },
-           { title: "OE-style leaf spring bush kit", meta: "New · 4.7★ seller", price: "$68.50" }],
-    repco: [{ title: "Repco rear leaf spring bush kit", meta: "In stock · Click & collect", price: "$76.30" }],
-    supercheap: [{ title: "Rear leaf spring bush kit, polyurethane", meta: "In stock · Click & collect", price: "$71.99" }]
-  },
-  "ELE-5510": {
-    ebay: [{ title: "Century 12V battery, 750 CCA", meta: "New · Local pickup", price: "$219.00" },
-           { title: "Century 12V battery, 750 CCA", meta: "New · 4.9★ seller", price: "$235.00" }],
-    repco: [{ title: "Century 12V battery, 750 CCA", meta: "In stock · Fitted in-store", price: "$255.00" }],
-    supercheap: [{ title: "Century 12V battery, 750 CCA", meta: "In stock · Fitted in-store", price: "$239.99" }]
-  },
-  "ELE-5522": {
-    ebay: [{ title: "Osram Night Breaker H4 LED, pair", meta: "New · Free postage", price: "$26.90" },
-           { title: "Philips X-tremeVision H4, pair", meta: "New · 4.9★ seller", price: "$29.50" }],
-    repco: [{ title: "Repco LED headlight globe H4", meta: "In stock · Click & collect", price: "$32.00" }],
-    supercheap: [{ title: "Osram Night Breaker H4 LED, pair", meta: "In stock · Click & collect", price: "$28.99" }]
-  },
-  "AIR-2210": {
-    ebay: [{ title: "K&N washable air filter", meta: "New · Free postage", price: "$19.90" },
-           { title: "Ryco air filter A1234", meta: "New · 4.9★ seller", price: "$21.00" }],
-    repco: [{ title: "Repco air filter element", meta: "In stock · Click & collect", price: "$24.50" }],
-    supercheap: [{ title: "Ryco air filter A1234", meta: "In stock · Click & collect", price: "$22.99" }]
-  },
-  "TYR-9001": {
-    ebay: [{ title: "265/65R17 all-terrain, single tyre", meta: "New · Freight quoted at checkout", price: "$219.00" },
-           { title: "265/65R17 all-terrain, single tyre", meta: "New · 4.8★ seller", price: "$232.00" }],
-    repco: [{ title: "265/65R17 all-terrain tyre", meta: "In stock · Fitted in-store", price: "$249.00" }],
-    supercheap: [{ title: "265/65R17 all-terrain tyre", meta: "In stock · Fitted in-store", price: "$239.99" }]
-  }
+  "BRK-4021": { ebay:[{title:"Bendix front brake pad set, ceramic",meta:"New · Free postage",price:"$74.95"},{title:"Front brake pads, DBA + pad set",meta:"New · 4.9★ seller",price:"$82.00"}],
+    repco:[{title:"Repco Reinz front brake pad set",meta:"In stock · Click & collect",price:"$89.99"}],
+    supercheap:[{title:"Bendix General CT front brake pads",meta:"In stock · Click & collect",price:"$84.99"}] },
+  "BRK-4088": { ebay:[{title:"DBA 4000 series front rotor, slotted",meta:"New · Free postage",price:"$131.50"},{title:"Bendix rear brake disc rotor, pair",meta:"New · 4.8★ seller",price:"$168.00"}],
+    repco:[{title:"Repco rear brake disc rotor",meta:"In stock · Click & collect",price:"$142.00"}],
+    supercheap:[{title:"Bendix rear brake disc rotor",meta:"In stock · Click & collect",price:"$149.99"}] },
+  "OIL-1102": { ebay:[{title:"Ryco oil filter Z516",meta:"New · Free postage",price:"$15.90"},{title:"K&N oil filter, spin-on",meta:"New · 4.9★ seller",price:"$22.40"}],
+    repco:[{title:"Repco oil filter R2635P",meta:"In stock · Click & collect",price:"$18.90"}],
+    supercheap:[{title:"Ryco oil filter Z516",meta:"In stock · Click & collect",price:"$17.99"}] },
+  "OIL-1150": { ebay:[{title:"Castrol Vecton 5W-30 diesel, 5L",meta:"New · Free postage",price:"$48.00"},{title:"Penrite Enviro+ 5W-30, 5L",meta:"New · 4.9★ seller",price:"$51.50"}],
+    repco:[{title:"Castrol Vecton 5W-30 diesel, 5L",meta:"In stock · Click & collect",price:"$54.00"}],
+    supercheap:[{title:"Penrite Enviro+ 5W-30, 5L",meta:"In stock · Click & collect",price:"$49.99"}] },
+  "SUS-3390": { ebay:[{title:"Monroe front shock absorber",meta:"New · Free postage",price:"$179.00"},{title:"KYB Excel-G front shock",meta:"New · 4.8★ seller",price:"$195.00"}],
+    repco:[{title:"Repco Monroe front shock absorber",meta:"In stock · Ships in 2 days",price:"$210.00"}],
+    supercheap:[{title:"KYB Excel-G front shock absorber",meta:"In stock · Click & collect",price:"$199.99"}] },
+  "SUS-3401": { ebay:[{title:"Rear leaf spring bush kit, poly",meta:"New · Free postage",price:"$59.00"},{title:"OE-style leaf spring bush kit",meta:"New · 4.7★ seller",price:"$68.50"}],
+    repco:[{title:"Repco rear leaf spring bush kit",meta:"In stock · Click & collect",price:"$76.30"}],
+    supercheap:[{title:"Rear leaf spring bush kit, polyurethane",meta:"In stock · Click & collect",price:"$71.99"}] },
+  "ELE-5510": { ebay:[{title:"Century 12V battery, 750 CCA",meta:"New · Local pickup",price:"$219.00"},{title:"Century 12V battery, 750 CCA",meta:"New · 4.9★ seller",price:"$235.00"}],
+    repco:[{title:"Century 12V battery, 750 CCA",meta:"In stock · Fitted in-store",price:"$255.00"}],
+    supercheap:[{title:"Century 12V battery, 750 CCA",meta:"In stock · Fitted in-store",price:"$239.99"}] },
+  "ELE-5522": { ebay:[{title:"Osram Night Breaker H4 LED, pair",meta:"New · Free postage",price:"$26.90"},{title:"Philips X-tremeVision H4, pair",meta:"New · 4.9★ seller",price:"$29.50"}],
+    repco:[{title:"Repco LED headlight globe H4",meta:"In stock · Click & collect",price:"$32.00"}],
+    supercheap:[{title:"Osram Night Breaker H4 LED, pair",meta:"In stock · Click & collect",price:"$28.99"}] },
+  "AIR-2210": { ebay:[{title:"K&N washable air filter",meta:"New · Free postage",price:"$19.90"},{title:"Ryco air filter A1234",meta:"New · 4.9★ seller",price:"$21.00"}],
+    repco:[{title:"Repco air filter element",meta:"In stock · Click & collect",price:"$24.50"}],
+    supercheap:[{title:"Ryco air filter A1234",meta:"In stock · Click & collect",price:"$22.99"}] },
+  "TYR-9001": { ebay:[{title:"265/65R17 all-terrain, single tyre",meta:"New · Freight quoted at checkout",price:"$219.00"},{title:"265/65R17 all-terrain, single tyre",meta:"New · 4.8★ seller",price:"$232.00"}],
+    repco:[{title:"265/65R17 all-terrain tyre",meta:"In stock · Fitted in-store",price:"$249.00"}],
+    supercheap:[{title:"265/65R17 all-terrain tyre",meta:"In stock · Fitted in-store",price:"$239.99"}] }
 };
+
+const CATEGORY_ICONS = {
+  "All": '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+  "Brakes": '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>',
+  "Suspension": '<svg viewBox="0 0 24 24"><path d="M8 3v4M16 17v4M8 7c0 2 2 2 2 4s-2 2-2 4M16 7c0 2 2 2 2 4s-2 2-2 4"/></svg>',
+  "Electrical": '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  "Filters": '<svg viewBox="0 0 24 24"><path d="M4 4h16l-6 8v6l-4 2v-8z"/></svg>',
+  "Tyres": '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>'
+};
+const CATS = { ute: ["All", "Brakes", "Suspension", "Electrical", "Filters", "Tyres"] };
 
 let currentVehicle = null;
 let activeCat = "All";
 
 const regoInput = document.getElementById('regoInput');
 const lookupBtn = document.getElementById('lookupBtn');
-const roadLoader = document.getElementById('roadLoader');
-const statusText = document.getElementById('statusText');
-const vehicleCard = document.getElementById('vehicleCard');
+const statusLine = document.getElementById('statusLine');
+const idleState = document.getElementById('idleState');
 const notFoundBox = document.getElementById('notFoundBox');
+const garageView = document.getElementById('garageView');
 const partsSection = document.getElementById('partsSection');
+const dock = document.getElementById('dock');
 
 function doLookup(){
   const plate = regoInput.value.trim().toUpperCase();
   if(!plate) return;
-  vehicleCard.classList.remove('show');
+  garageView.classList.remove('show');
   notFoundBox.classList.remove('show');
+  idleState.style.display = 'none';
   partsSection.classList.remove('show');
   lookupBtn.disabled = true;
-  roadLoader.classList.add('show');
-  statusText.textContent = 'Checking registration…';
+  statusLine.innerHTML = '<span class="road-loader"></span>Checking registration…';
 
   setTimeout(() => {
     lookupBtn.disabled = false;
-    roadLoader.classList.remove('show');
     const v = VEHICLES[plate];
     if(v){
       currentVehicle = v;
-      statusText.textContent = 'Found it.';
+      statusLine.textContent = '';
       document.getElementById('vMake').textContent = v.make + ' ' + v.model;
-      document.getElementById('vSub').textContent = v.variant;
       document.getElementById('vPlate').textContent = plate;
-      document.getElementById('vColour').textContent = v.colour;
-      document.getElementById('vYear').textContent = v.year;
-      document.getElementById('vOdo').textContent = v.odo;
-      document.getElementById('vVin').textContent = v.vin;
-      document.getElementById('vExpiry').textContent = 'Rego expires ' + v.rego_expiry;
-      vehicleCard.classList.add('show');
-      document.getElementById('partsHeading').textContent = 'Parts for your ' + v.make + ' ' + v.model;
+      document.getElementById('vExpiry').textContent = 'Rego valid — expires ' + v.rego_expiry;
+      const specs = [
+        ['Variant', v.variant], ['Engine', v.engine], ['Drivetrain', v.drivetrain],
+        ['Power', v.power], ['Torque', v.torque], ['Weight', v.weight],
+        ['Fuel', v.fuel], ['Colour', v.colour], ['Year', v.year], ['Odometer', v.odo]
+      ];
+      document.getElementById('specList').innerHTML = specs.map(([k,val]) =>
+        `<div class="spec-row"><span class="k">${k}</span><span class="v">${val}</span></div>`
+      ).join('');
+      garageView.classList.add('show');
+      buildDock();
       renderParts();
-      partsSection.classList.add('show');
     } else {
       currentVehicle = null;
-      statusText.textContent = '';
       notFoundBox.classList.add('show');
     }
   }, 850);
@@ -445,26 +392,31 @@ function doLookup(){
 lookupBtn.addEventListener('click', doLookup);
 regoInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') doLookup(); });
 
-function renderParts(){
+function buildDock(){
   const cat = currentVehicle.category;
-  const catRow = document.getElementById('catRow');
-  catRow.innerHTML = '';
+  dock.innerHTML = '';
   activeCat = "All";
   CATS[cat].forEach(c => {
     const b = document.createElement('button');
-    b.className = 'cat-chip' + (c === 'All' ? ' active' : '');
-    b.textContent = c;
+    b.className = 'dock-btn' + (c === 'All' ? ' active' : '');
+    b.innerHTML = (CATEGORY_ICONS[c] || CATEGORY_ICONS['All']) + `<span>${c}</span>`;
     b.addEventListener('click', () => {
       activeCat = c;
-      document.querySelectorAll('.cat-chip').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.dock-btn').forEach(t => t.classList.remove('active'));
       b.classList.add('active');
       filterAndRender();
+      partsSection.scrollIntoView({behavior:'smooth', block:'start'});
     });
-    catRow.appendChild(b);
+    dock.appendChild(b);
   });
+}
+
+function renderParts(){
+  document.getElementById('partsHeading').textContent = 'Parts for your ' + currentVehicle.make + ' ' + currentVehicle.model;
   document.getElementById('partSearch').value = '';
   document.getElementById('partSearch').oninput = filterAndRender;
   filterAndRender();
+  partsSection.classList.add('show');
 }
 
 function filterAndRender(){
@@ -505,7 +457,7 @@ function filterAndRender(){
       }
       searchBtn.textContent = 'Hide';
       resultsEl.classList.add('show');
-      resultsEl.innerHTML = `<div class="results-loading"><span class="road-loader show"></span>Searching eBay, Repco &amp; Supercheap Auto…</div>`;
+      resultsEl.innerHTML = `<div class="results-loading"><span class="road-loader"></span>Searching eBay, Repco &amp; Supercheap Auto…</div>`;
       searchBtn.disabled = true;
       setTimeout(() => {
         renderPartResults(resultsEl, p);
