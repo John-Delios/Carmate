@@ -37,28 +37,63 @@
   }
   ::selection{background:var(--signal);color:var(--void);}
 
-  /* ---- Top bar ---- */
-  .topbar{
-    display:flex;flex-direction:column;align-items:flex-start;gap:14px;
-    padding:26px 28px 22px;
-    border-bottom:1px solid var(--hair);
-    background:
-      linear-gradient(var(--void),var(--void)),
-      repeating-linear-gradient(0deg, rgba(79,214,224,0.035) 0 1px, transparent 1px 26px),
-      repeating-linear-gradient(90deg, rgba(79,214,224,0.035) 0 1px, transparent 1px 26px);
+  /* ---- Slim top strip ---- */
+  .slim-top{
+    padding:20px 28px;border-bottom:1px solid var(--hair);
   }
   .brand-mini{
-    font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:13px;
-    color:var(--signal);letter-spacing:0.08em;margin-bottom:-6px;
-  }
-  .garage-word{
-    font-size:30px;letter-spacing:0.01em;color:var(--cyan);
+    font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:15px;
+    color:var(--signal);letter-spacing:0.08em;
   }
 
-  .plate-entry{display:flex;align-items:center;gap:10px;}
+  /* ---- Landing hero ---- */
+  .landing-hero{
+    position:relative;overflow:hidden;
+    padding:70px 28px 56px;
+    background:
+      radial-gradient(ellipse 700px 400px at 15% 0%, rgba(79,214,224,0.09), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(79,214,224,0.03) 0 1px, transparent 1px 26px),
+      repeating-linear-gradient(90deg, rgba(79,214,224,0.03) 0 1px, transparent 1px 26px),
+      var(--void);
+    border-bottom:1px solid var(--hair);
+  }
+  .hero-bg-word{
+    position:absolute;top:-40px;left:-10px;
+    font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+    font-size:clamp(140px,22vw,320px);color:var(--panel-2);
+    opacity:0.55;letter-spacing:0.02em;line-height:1;
+    pointer-events:none;user-select:none;
+    z-index:0;
+  }
+  .hero-content{position:relative;z-index:1;max-width:900px;margin:0 auto;}
+  .hero-eyebrow{
+    color:var(--cyan);font-size:13px;font-weight:700;letter-spacing:0.1em;margin-bottom:14px;
+  }
+  .hero-title{
+    font-size:clamp(36px,5.5vw,56px);color:var(--paper);margin-bottom:16px;max-width:640px;
+  }
+  .hero-sub{
+    color:var(--ash);font-size:15px;line-height:1.55;max-width:480px;margin-bottom:34px;
+  }
+
+  .finder-panel{
+    display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;
+    background:var(--panel-2);border:1px solid var(--hair);border-radius:14px;
+    padding:22px;box-shadow:0 20px 50px rgba(0,0,0,0.4);
+  }
+  .finder-field{display:flex;flex-direction:column;gap:7px;}
+  .finder-field label{font-size:11px;color:var(--ash);letter-spacing:0.04em;}
+  .finder-field input{
+    background:var(--void);border:1px solid var(--hair);color:var(--paper);
+    border-radius:8px;padding:11px 14px;font-family:'Public Sans',sans-serif;font-size:14px;
+    outline:none;width:150px;
+  }
+  .finder-field input:focus{border-color:var(--cyan);}
+  .finder-field input::placeholder{color:#5A6270;}
+
   .plate-mini{
-    display:flex;background:var(--paper);border-radius:5px;overflow:hidden;
-    box-shadow:0 0 0 1px var(--hair), 0 0 18px rgba(79,214,224,0.12);
+    display:flex;background:var(--paper);border-radius:6px;overflow:hidden;
+    box-shadow:0 0 0 1px var(--hair);
   }
   .plate-mini .marque{
     background:var(--route);color:#fff;font-family:'Big Shoulders Display';font-weight:800;
@@ -66,22 +101,25 @@
   }
   #regoInput{
     border:none;outline:none;background:var(--paper);color:var(--void);
-    font-family:'Space Mono',monospace;font-weight:700;font-size:16px;letter-spacing:0.1em;
-    text-align:center;padding:9px 10px;width:120px;text-transform:uppercase;
+    font-family:'Space Mono',monospace;font-weight:700;font-size:15px;letter-spacing:0.1em;
+    text-align:center;padding:10px 8px;width:110px;text-transform:uppercase;
   }
   #regoInput::placeholder{color:#B7B2A4;}
+
   .lookup-btn{
-    background:var(--signal);color:var(--void);border:none;border-radius:5px;
-    font-family:'Public Sans',sans-serif;font-weight:700;font-size:13px;
-    padding:10px 18px;cursor:pointer;white-space:nowrap;
+    background:var(--signal);color:var(--void);border:none;border-radius:8px;
+    font-family:'Public Sans',sans-serif;font-weight:700;font-size:14px;
+    padding:12px 26px;cursor:pointer;white-space:nowrap;height:fit-content;
     box-shadow:0 0 16px rgba(242,183,5,0.25);
-    transition:box-shadow 0.15s ease;
+    transition:box-shadow 0.15s ease, background 0.15s ease;
   }
   .lookup-btn:hover{background:var(--signal-deep);box-shadow:0 0 22px rgba(242,183,5,0.4);}
   .lookup-btn:disabled{background:var(--hair);color:var(--ash);cursor:default;box-shadow:none;}
 
   .shell{max-width:1100px;margin:0 auto;padding:0 28px;}
-  .status-line{font-size:12px;color:var(--ash);text-align:left;padding:0 28px;min-height:18px;}
+  .status-line{font-size:12px;color:var(--ash);text-align:left;padding-top:14px;min-height:18px;}
+  .hero-hint{font-size:12px;color:var(--ash);margin-top:10px;}
+  .hero-hint strong{color:var(--signal);}
   .road-loader{
     display:inline-block;width:28px;height:3px;border-radius:2px;
     background-image:repeating-linear-gradient(90deg,var(--signal) 0 5px,transparent 5px 10px);
@@ -89,15 +127,7 @@
   }
   @keyframes roll{from{background-position:0 0;}to{background-position:-20px 0;}}
 
-  /* ---- Idle state ---- */
-  .idle{
-    text-align:left;padding:70px 0;color:var(--ash);
-  }
-  .idle h2{font-size:32px;color:var(--paper);margin-bottom:10px;}
-  .idle p{font-size:14px;max-width:340px;margin:0;}
-  .idle strong{color:var(--signal);}
-
-  .not-found{display:none;text-align:left;padding:70px 0;}
+  .not-found{display:none;text-align:left;padding:56px 0;}
   .not-found.show{display:block;}
   .not-found h2{font-size:28px;color:var(--paper);margin-bottom:8px;}
   .not-found p{color:var(--ash);font-size:14px;}
@@ -270,28 +300,44 @@
 </style>
 </head>
 <body>
-<div class="topbar">
+<div class="slim-top">
   <div class="brand-mini">Carmate</div>
-  <div class="garage-word">Garage</div>
-  <div class="plate-entry">
-    <div class="plate-mini">
-      <div class="marque">NSW</div>
-      <input id="regoInput" maxlength="8" placeholder="REGO" autocomplete="off">
-    </div>
-    <button class="lookup-btn" id="lookupBtn">Enter</button>
-  </div>
 </div>
-<div class="status-line" id="statusLine"></div>
+
+<section class="landing-hero">
+  <div class="hero-bg-word">GARAGE</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Carmate Garage</div>
+    <h1 class="hero-title">Find the right parts<br>for your exact car.</h1>
+    <p class="hero-sub">Look your car up by rego, or by make and model — we'll pull the specs and go hunting for parts across eBay, Repco and Supercheap Auto.</p>
+
+    <div class="finder-panel">
+      <div class="finder-field">
+        <label>Make</label>
+        <input id="makeInput" placeholder="e.g. LDV" autocomplete="off">
+      </div>
+      <div class="finder-field">
+        <label>Model</label>
+        <input id="modelInput" placeholder="e.g. T60" autocomplete="off">
+      </div>
+      <div class="finder-field finder-plate">
+        <label>Number plate</label>
+        <div class="plate-mini">
+          <div class="marque">NSW</div>
+          <input id="regoInput" maxlength="8" placeholder="REGO" autocomplete="off">
+        </div>
+      </div>
+      <button class="lookup-btn" id="lookupBtn">Find my car</button>
+    </div>
+    <div class="status-line" id="statusLine"></div>
+    <div class="hero-hint">Try plate <strong>HE55SK</strong>, or Make <strong>LDV</strong> / Model <strong>T60</strong>.</div>
+  </div>
+</section>
 
 <div class="shell">
-  <div class="idle" id="idleState">
-    <h2>Your garage is empty</h2>
-    <p>Enter your plate up top and we'll pull your car straight in. Try <strong>HE55SK</strong>.</p>
-  </div>
-
   <div class="not-found" id="notFoundBox">
     <h2>No car on record</h2>
-    <p>Double check the plate, or try <strong>HE55SK</strong> to see it work.</p>
+    <p>Double check what you entered, or try <strong>HE55SK</strong> to see it work.</p>
   </div>
 
   <div class="garage" id="garageView">
@@ -422,28 +468,48 @@ let currentVehicle = null;
 let activeCat = "All";
 
 const regoInput = document.getElementById('regoInput');
+const makeInput = document.getElementById('makeInput');
+const modelInput = document.getElementById('modelInput');
 const lookupBtn = document.getElementById('lookupBtn');
 const statusLine = document.getElementById('statusLine');
-const idleState = document.getElementById('idleState');
 const notFoundBox = document.getElementById('notFoundBox');
 const garageView = document.getElementById('garageView');
 const partsSection = document.getElementById('partsSection');
 const dock = document.getElementById('dock');
 
-function doLookup(){
+function findVehicle(){
   const plate = regoInput.value.trim().toUpperCase();
-  if(!plate) return;
+  if(plate && VEHICLES[plate]) return { plate, v: VEHICLES[plate] };
+
+  const makeQ = makeInput.value.trim().toLowerCase();
+  const modelQ = modelInput.value.trim().toLowerCase();
+  if(makeQ || modelQ){
+    for(const [p, v] of Object.entries(VEHICLES)){
+      const makeMatch = !makeQ || v.make.toLowerCase().includes(makeQ);
+      const modelMatch = !modelQ || v.model.toLowerCase().includes(modelQ);
+      if(makeMatch && modelMatch) return { plate: p, v };
+    }
+  }
+  return null;
+}
+
+function doLookup(){
+  const plateVal = regoInput.value.trim();
+  const makeVal = makeInput.value.trim();
+  const modelVal = modelInput.value.trim();
+  if(!plateVal && !makeVal && !modelVal) return;
+
   garageView.classList.remove('show');
   notFoundBox.classList.remove('show');
-  idleState.style.display = 'none';
   partsSection.classList.remove('show');
   lookupBtn.disabled = true;
   statusLine.innerHTML = '<span class="road-loader"></span>Checking registration…';
 
   setTimeout(() => {
     lookupBtn.disabled = false;
-    const v = VEHICLES[plate];
-    if(v){
+    const found = findVehicle();
+    if(found){
+      const { plate, v } = found;
       currentVehicle = v;
       statusLine.textContent = '';
       document.getElementById('vBrand').textContent = v.make;
@@ -470,17 +536,22 @@ function doLookup(){
       `;
 
       garageView.classList.add('show');
+      garageView.scrollIntoView({behavior:'smooth', block:'start'});
       buildDock();
       renderParts();
     } else {
       currentVehicle = null;
       notFoundBox.classList.add('show');
+      notFoundBox.scrollIntoView({behavior:'smooth', block:'start'});
     }
   }, 850);
 }
 
 lookupBtn.addEventListener('click', doLookup);
-regoInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') doLookup(); });
+[regoInput, makeInput, modelInput].forEach(inp => {
+  inp.addEventListener('keydown', (e) => { if(e.key === 'Enter') doLookup(); });
+});
+
 
 function buildDock(){
   const cat = currentVehicle.category;
