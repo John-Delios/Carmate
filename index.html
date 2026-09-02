@@ -209,8 +209,20 @@
   #partSearch:focus{border-color:var(--signal);}
   #partSearch::placeholder{color:var(--ash);}
 
-  .parts-list{display:flex;flex-direction:column;gap:10px;}
-  .part-row{background:var(--panel);border-radius:10px;padding:16px 18px;}
+  .parts-list{display:flex;flex-direction:column;gap:14px;}
+  .part-row{
+    background:var(--panel-2);
+    border:1px solid var(--hair);
+    border-radius:12px;
+    padding:18px 20px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.3);
+    transition:transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+  .part-row:hover{
+    transform:translateY(-3px);
+    border-color:rgba(79,214,224,0.35);
+    box-shadow:0 14px 30px rgba(0,0,0,0.45), 0 0 0 1px rgba(79,214,224,0.12);
+  }
   .part-row-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
   .part-name{font-size:16px;color:var(--paper);font-weight:600;}
   .part-sku{display:block;font-family:'Space Mono',monospace;font-size:11px;color:var(--ash);margin-top:3px;}
@@ -219,17 +231,33 @@
     background:transparent;color:var(--signal);border:1.5px solid var(--signal);
     border-radius:999px;padding:8px 18px;font-weight:700;font-size:13px;
     font-family:'Public Sans',sans-serif;cursor:pointer;white-space:nowrap;
+    transition:background 0.15s ease, box-shadow 0.15s ease;
   }
-  .search-part-btn:hover{background:var(--signal);color:var(--void);}
-  .search-part-btn:disabled{opacity:0.5;cursor:default;}
+  .search-part-btn:hover{background:var(--signal);color:var(--void);box-shadow:0 0 16px rgba(242,183,5,0.35);}
+  .search-part-btn:disabled{opacity:0.5;cursor:default;box-shadow:none;}
   .no-results{padding:20px;text-align:center;color:var(--ash);font-size:14px;}
+
+  .part-searchbar{
+    display:none;margin-top:16px;gap:8px;
+  }
+  .part-searchbar.show{display:flex;}
+  .part-searchbar input{
+    flex:1;background:var(--void);border:1px solid var(--hair);color:var(--paper);
+    border-radius:8px;padding:11px 14px;font-family:'Public Sans',sans-serif;font-size:14px;outline:none;
+  }
+  .part-searchbar input:focus{border-color:var(--cyan);}
+  .part-go-btn{
+    background:var(--cyan);color:var(--void);border:none;border-radius:8px;
+    padding:0 20px;font-weight:700;font-size:13px;cursor:pointer;font-family:'Public Sans',sans-serif;
+  }
+  .part-go-btn:hover{opacity:0.85;}
 
   .part-results{display:none;margin-top:16px;padding-top:16px;border-top:1px dashed var(--hair);}
   .part-results.show{display:block;}
   .results-loading{font-size:13px;color:var(--ash);display:flex;align-items:center;}
   .results-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
   @media (max-width:700px){.results-groups{grid-template-columns:1fr;}}
-  .tag{position:relative;background:var(--paper);color:var(--void);border-radius:4px 10px 10px 4px;padding:14px 14px 14px 20px;}
+  .tag{position:relative;background:var(--paper);color:var(--void);border-radius:4px 10px 10px 4px;padding:14px 14px 14px 20px;box-shadow:0 6px 14px rgba(0,0,0,0.3);}
   .tag::before{content:'';position:absolute;left:8px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--void);}
   .tag-source{font-size:11px;font-weight:700;color:var(--route);margin-bottom:8px;}
   .listing{padding:8px 0;border-top:1px dashed #E8E1CC;}
@@ -507,25 +535,44 @@ function filterAndRender(){
         <span class="part-price">from ${p.price}</span>
         <button type="button" class="search-part-btn">Search</button>
       </div>
+      <div class="part-searchbar">
+        <input type="text" value="${p.name}">
+        <button type="button" class="part-go-btn">Go</button>
+      </div>
       <div class="part-results"></div>
     `;
     const searchBtn = row.querySelector('.search-part-btn');
+    const searchBar = row.querySelector('.part-searchbar');
+    const searchInput = row.querySelector('.part-searchbar input');
+    const goBtn = row.querySelector('.part-go-btn');
     const resultsEl = row.querySelector('.part-results');
+
     searchBtn.addEventListener('click', () => {
-      if(resultsEl.classList.contains('show')){
+      const isOpen = searchBar.classList.contains('show');
+      if(isOpen){
+        searchBar.classList.remove('show');
         resultsEl.classList.remove('show');
         searchBtn.textContent = 'Search';
         return;
       }
-      searchBtn.textContent = 'Hide';
+      searchBar.classList.add('show');
+      searchBtn.textContent = 'Close';
+      searchInput.focus();
+      searchInput.select();
+    });
+
+    function runSearch(){
       resultsEl.classList.add('show');
-      resultsEl.innerHTML = `<div class="results-loading"><span class="road-loader"></span>Searching eBay, Repco &amp; Supercheap Auto…</div>`;
-      searchBtn.disabled = true;
+      resultsEl.innerHTML = `<div class="results-loading"><span class="road-loader"></span>Searching eBay, Repco &amp; Supercheap Auto for "${searchInput.value}"…</div>`;
+      goBtn.disabled = true;
       setTimeout(() => {
         renderPartResults(resultsEl, p);
-        searchBtn.disabled = false;
+        goBtn.disabled = false;
       }, 750);
-    });
+    }
+    goBtn.addEventListener('click', runSearch);
+    searchInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') runSearch(); });
+
     listEl.appendChild(row);
   });
 }
