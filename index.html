@@ -47,10 +47,13 @@
       repeating-linear-gradient(0deg, rgba(79,214,224,0.035) 0 1px, transparent 1px 26px),
       repeating-linear-gradient(90deg, rgba(79,214,224,0.035) 0 1px, transparent 1px 26px);
   }
-  .garage-word{
-    font-size:28px;letter-spacing:0.03em;color:var(--paper);
+  .brand-mini{
+    font-family:'Big Shoulders Display',sans-serif;font-weight:700;font-size:13px;
+    color:var(--signal);letter-spacing:0.08em;margin-bottom:-6px;
   }
-  .garage-word span{color:var(--signal);}
+  .garage-word{
+    font-size:30px;letter-spacing:0.01em;color:var(--cyan);
+  }
 
   .plate-entry{display:flex;align-items:center;gap:10px;}
   .plate-mini{
@@ -101,33 +104,49 @@
   .not-found strong{color:var(--signal);}
 
   /* ---- Garage view ---- */
-  .garage{display:none;padding:36px 0 20px;}
+  .garage{display:none;padding:40px 0 20px;}
   .garage.show{display:block;}
   .garage-grid{
-    display:grid;grid-template-columns:260px 1fr;gap:36px;align-items:center;
+    display:grid;grid-template-columns:280px 1fr;gap:30px;align-items:end;
   }
   @media (max-width:800px){.garage-grid{grid-template-columns:1fr;}}
 
-  .spec-col{display:flex;flex-direction:column;gap:18px;}
-  .vname{font-size:34px;color:var(--paper);}
+  .spec-col{display:flex;flex-direction:column;gap:2px;}
+  .brand-row{
+    display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  }
+  .brand-dot{
+    width:20px;height:20px;border-radius:5px;background:var(--cyan);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .brand-dot svg{width:11px;height:11px;fill:var(--void);}
+  .brand-name{color:var(--cyan);font-size:12px;font-weight:700;letter-spacing:0.06em;}
+  .vname{font-size:26px;color:var(--paper);line-height:1.15;margin-bottom:4px;}
+  .vyear{color:var(--paper);font-size:14px;font-weight:700;margin-bottom:4px;}
+  .vcolour{color:var(--ash);font-size:13px;margin-bottom:14px;}
   .vplate-chip{
-    display:inline-block;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;
-    background:var(--paper);color:var(--void);padding:4px 10px;border-radius:4px;
-    letter-spacing:0.08em;margin-top:6px;
+    display:inline-flex;align-items:center;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;
+    color:var(--paper);border:1.5px solid var(--hair);padding:6px 16px;border-radius:999px;
+    letter-spacing:0.1em;margin-bottom:22px;width:fit-content;
   }
-  .status-chip{
-    display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--route);
-    margin-top:10px;
-  }
-  .status-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--route);}
 
-  .spec-list{border-top:1px solid var(--hair);margin-top:6px;}
+  .spec-list{border-top:1px solid var(--hair);padding-top:2px;margin-bottom:18px;}
   .spec-row{
-    display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--hair);
+    display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--hair);
     font-size:13px;
   }
   .spec-row .k{color:var(--ash);}
-  .spec-row .v{color:var(--paper);font-weight:600;font-family:'Space Mono',monospace;font-size:12px;}
+  .spec-row .v{color:var(--paper);font-weight:700;font-size:13px;}
+
+  .status-row{display:flex;align-items:center;gap:22px;margin-bottom:16px;}
+  .status-item{display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .status-item svg{width:20px;height:20px;stroke:var(--ash);fill:none;stroke-width:1.6;}
+  .status-item span{font-size:11px;color:var(--ash);}
+  .status-item.good svg{stroke:var(--route);}
+  .status-item.good span{color:var(--route);}
+
+  .type-row{font-size:12px;color:var(--ash);}
+  .type-row .tag{background:none;padding:0;color:var(--paper);font-weight:600;}
 
   /* ---- Hero illustration ---- */
   .hero-stage{
@@ -224,7 +243,8 @@
 </head>
 <body>
 <div class="topbar">
-  <div class="garage-word">Car<span>mate</span> Garage</div>
+  <div class="brand-mini">Carmate</div>
+  <div class="garage-word">Garage</div>
   <div class="plate-entry">
     <div class="plate-mini">
       <div class="marque">NSW</div>
@@ -249,12 +269,17 @@
   <div class="garage" id="garageView">
     <div class="garage-grid">
       <div class="spec-col">
-        <div>
-          <div class="vname" id="vMake"></div>
-          <div class="vplate-chip" id="vPlate"></div>
-          <div class="status-chip" id="vExpiry"></div>
+        <div class="brand-row">
+          <div class="brand-dot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+          <span class="brand-name" id="vBrand"></span>
         </div>
+        <div class="vname" id="vModel"></div>
+        <div class="vyear" id="vYear"></div>
+        <div class="vcolour" id="vColour"></div>
+        <div class="vplate-chip" id="vPlate"></div>
         <div class="spec-list" id="specList"></div>
+        <div class="status-row" id="statusRow"></div>
+        <div class="type-row">Car type: <span class="tag" id="vType"></span></div>
       </div>
       <div class="hero-stage">
         <span class="hud-corner tl"></span>
@@ -393,17 +418,29 @@ function doLookup(){
     if(v){
       currentVehicle = v;
       statusLine.textContent = '';
-      document.getElementById('vMake').textContent = v.make + ' ' + v.model;
+      document.getElementById('vBrand').textContent = v.make;
+      document.getElementById('vModel').textContent = v.model + ' — ' + v.variant;
+      document.getElementById('vYear').textContent = "'" + String(v.year).slice(-2);
+      document.getElementById('vColour').textContent = 'Base colour: ' + v.colour;
       document.getElementById('vPlate').textContent = plate;
-      document.getElementById('vExpiry').textContent = 'Rego valid — expires ' + v.rego_expiry;
+      document.getElementById('vType').textContent = '#' + v.category.toUpperCase();
+
       const specs = [
-        ['Variant', v.variant], ['Engine', v.engine], ['Drivetrain', v.drivetrain],
-        ['Power', v.power], ['Torque', v.torque], ['Weight', v.weight],
-        ['Fuel', v.fuel], ['Colour', v.colour], ['Year', v.year], ['Odometer', v.odo]
+        ['Engine', v.engine], ['Drivetrain', v.drivetrain],
+        ['Max power', v.power], ['Max torque', v.torque],
+        ['Weight', v.weight], ['Fuel type', v.fuel]
       ];
       document.getElementById('specList').innerHTML = specs.map(([k,val]) =>
         `<div class="spec-row"><span class="k">${k}</span><span class="v">${val}</span></div>`
       ).join('');
+
+      const odoIcon = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>';
+      const regoIcon = '<svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>';
+      document.getElementById('statusRow').innerHTML = `
+        <div class="status-item"><span>${odoIcon}</span><span>${v.odo}</span></div>
+        <div class="status-item good"><span>${regoIcon}</span><span>Rego valid</span></div>
+      `;
+
       garageView.classList.add('show');
       buildDock();
       renderParts();
